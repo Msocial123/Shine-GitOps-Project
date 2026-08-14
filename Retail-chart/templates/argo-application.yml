@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/ashish222jee/Shine-GitOps-Project.git
-    targetRevision: main
+    targetRevision: patch-1
     path: Retail-chart
     helm:
       values: |
