@@ -81,8 +81,17 @@ jobs:
           name: trivy-report-${{ env.IMAGE_TAG }}
           path: trivy-report.txt
 
+      - name: Check email secrets configured
+        id: email_check
+        run: |
+          if [ -n "${{ secrets.EMAIL_USERNAME }}" ] && [ -n "${{ secrets.EMAIL_PASSWORD }}" ] && [ -n "${{ secrets.EMAIL_TO }}" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Email Trivy report
-        if: ${{ secrets.EMAIL_USERNAME != '' && secrets.EMAIL_PASSWORD != '' && secrets.EMAIL_TO != '' }}
+        if: steps.email_check.outputs.enabled == 'true'
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
