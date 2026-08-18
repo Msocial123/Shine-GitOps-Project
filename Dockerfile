@@ -9,7 +9,7 @@ RUN apk update && apk upgrade --no-cache
 # dependencies (tar, brace-expansion, sigstore, ...) which can be behind
 # on CVE fixes even on a fresh base image. Update npm itself so those
 # bundled deps are current too.
-RUN npm install -g npm@latest
+RUN npm install -g npm@11
 
 WORKDIR /Capsule
 
