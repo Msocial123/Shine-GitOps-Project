@@ -88,32 +88,6 @@ jobs:
           name: trivy-report-${{ env.IMAGE_TAG }}
           path: trivy-report.txt
 
-      - name: Check email secrets configured
-        id: email_check
-        run: |
-          if [ -n "${{ secrets.EMAIL_USERNAME }}" ] && [ -n "${{ secrets.EMAIL_PASSWORD }}" ] && [ -n "${{ secrets.EMAIL_TO }}" ]; then
-            echo "enabled=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "enabled=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Email Trivy report
-        if: steps.email_check.outputs.enabled == 'true'
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.gmail.com
-          server_port: 465
-          username: ${{ secrets.EMAIL_USERNAME }}
-          password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: 'Trivy Scan Report - ${{ env.DOCKER_IMAGE }}:${{ env.IMAGE_TAG }} (${{ job.status }})'
-          to: ${{ secrets.EMAIL_TO }}
-          from: 'DevSecOps Pipeline <${{ secrets.EMAIL_USERNAME }}>'
-          body: |
-            Trivy vulnerability scan completed for ${{ env.DOCKER_IMAGE }}:${{ env.IMAGE_TAG }}.
-            Triggered by: ${{ github.event_name }} (${{ github.actor }})
-            Full report is attached.
-          attachments: trivy-report.txt
-
       - name: Trivy vulnerability gate (block push on CRITICAL/HIGH)
         uses: aquasecurity/trivy-action@v0.36.0
         with:
