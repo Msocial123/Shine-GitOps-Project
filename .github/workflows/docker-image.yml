@@ -71,7 +71,14 @@ jobs:
             echo "## Trivy Vulnerability Scan Report"
             echo "Image: \`${{ env.DOCKER_IMAGE }}:${{ env.IMAGE_TAG }}\`"
             echo '```'
-            cat trivy-report.txt
+            # GitHub caps step summaries at 1MB; the full report (all severities)
+            # can exceed that, so truncate here. Full report is in the console
+            # log above and in the uploaded artifact.
+            head -c 900000 trivy-report.txt
+            if [ "$(wc -c < trivy-report.txt)" -gt 900000 ]; then
+              echo ""
+              echo "... [truncated - see the full console log or the trivy-report artifact for the complete report]"
+            fi
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
